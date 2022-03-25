@@ -5,3 +5,11 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+require 'faker'
+
+5.times do 
+ role = Role.create(title: Faker::Company.unique.profession, billable: [true, false].sample)
+  5.times do 
+    role.people.create(name: Faker::Name.unique.name, age: rand(18..60))
+  end
+end
