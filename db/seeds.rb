@@ -6,10 +6,14 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 require 'faker'
-
 5.times do 
+  region = Region.create(name: Faker::Address.unique.country)
+  region.locations.create(name: Faker::Address.unique.city)
+end
+5.times do 
+
  role = Role.create(title: Faker::Company.unique.profession, billable: [true, false].sample)
   5.times do 
-    role.people.create(name: Faker::Name.unique.name, age: rand(18..60))
+    role.people.create(name: Faker::Name.unique.name, age: rand(18..60), location_id: Location.all.map(&:id).sample)
   end
 end

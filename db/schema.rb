@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_25_035808) do
+ActiveRecord::Schema.define(version: 2022_03_25_171139) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "locations", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "region_id"
+    t.index ["region_id"], name: "index_locations_on_region_id"
+  end
 
   create_table "people", force: :cascade do |t|
     t.string "name"
@@ -18,7 +29,15 @@ ActiveRecord::Schema.define(version: 2022_03_25_035808) do
     t.integer "role_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "location_id"
+    t.index ["location_id"], name: "index_people_on_location_id"
     t.index ["role_id"], name: "index_people_on_role_id"
+  end
+
+  create_table "regions", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "roles", force: :cascade do |t|
@@ -28,5 +47,7 @@ ActiveRecord::Schema.define(version: 2022_03_25_035808) do
     t.boolean "billable", default: true, null: false
   end
 
+  add_foreign_key "locations", "regions"
+  add_foreign_key "people", "locations"
   add_foreign_key "people", "roles"
 end
