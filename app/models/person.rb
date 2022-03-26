@@ -16,13 +16,13 @@ class Person < ApplicationRecord
     joins(:role).merge(Role.managers)
   end
 
-  def self.managed_by_and_manager(name)
+  def self.not_managed_by(name)
     Person.
     joins(<<-SQL).
       LEFT JOIN people managers
       ON managers.id = people.manager_id
     SQL
-    where(
+    where.not(
       "managers.id != ? OR managers.id IS NULL", 
      Person.find_by!(name: name) 
     )
