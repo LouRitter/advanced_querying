@@ -10,10 +10,17 @@ require 'faker'
   region = Region.create(name: Faker::Address.unique.country)
   region.locations.create(name: Faker::Address.unique.city)
 end
-5.times do 
-
- role = Role.create(title: Faker::Company.unique.profession, billable: [true, false].sample)
+manager_role = Role.create(title: "Manager", billable: [true, false].sample)
+manager_1 = Person.create(name: Faker::Name.unique.name, role_id: manager_role.id,  age: rand(18..60), location_id: Location.all.map(&:id).sample)
+manager_2 = Person.create(name: Faker::Name.unique.name, role_id: manager_role.id,  age: rand(18..60), location_id: Location.all.map(&:id).sample)
+p manager_1.inspect
+p manager_2.inspect
+if manager_1.save && manager_2.save 
   5.times do 
-    role.people.create(name: Faker::Name.unique.name, age: rand(18..60), location_id: Location.all.map(&:id).sample)
+
+  role = Role.create(title: Faker::Company.unique.profession, billable: [true, false].sample)
+    5.times do 
+      role.people.create(name: Faker::Name.unique.name, age: rand(18..60), manager_id: [manager_1.id, manager_2.id].sample, location_id: Location.all.map(&:id).sample)
+    end
   end
 end
