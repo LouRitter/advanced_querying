@@ -21,6 +21,48 @@ class Person < ApplicationRecord
     .merge(Role.managers)
   end
 
+  def self.unbillable_salary_sum
+    joins(:role)
+    .where(roles: {billable: false})
+    .sum(:salary)
+  end
+
+  def self.employees_count
+    # joins(:employees)
+    # .group("people.name")
+    # .count("employees_people.id")
+
+
+    #includes people with no employees
+    joins("LEFT JOIN people employees ON employees.manager_id = people.id")
+    .group("people.name")
+    .count("employees.id")
+
+  end
+
+  def self.under_average_salary
+    joins(
+      "INNER JOIN ("+
+      Person.select("location_id, AVG(salary) as average")
+      .group("location_id")
+      .to_sql + 
+      ") salaries " \
+      "ON salaries.location_id = people.location_id"
+    
+    ).where("people.salary < salaries.average")
+  end
+
+  def self.highest_salaries_ordered_by_name
+    joins("INNER JOIN ("+
+      Person.select("id, rank() OVER (ORDER BY salary DESC)")
+      .to_sql + 
+      ") salaries " \
+      "ON salaries.id = people.id"
+    ).where("salaries.rank <= 3")
+    .order(:name)
+  end
+
+
   def self.not_managed_by(name)
     Person.
     joins(<<-SQL).
