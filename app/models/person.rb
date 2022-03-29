@@ -5,15 +5,20 @@ class Person < ApplicationRecord
   has_many :employees, class_name: "Person", foreign_key: :manager_id
   
   def self.billable
-    Person.joins(:role).merge(Role.billable)
+    joins(:role)
+    .merge(Role.billable)
   end
 
   def self.search_for_manager(name)
-    joins(:role).merge(Role.managers).where("people.name LIKE ?", "%#{name}%").map(&:name)
+    joins(:role)
+    .merge(Role.managers)
+    .where("people.name LIKE ?", "%#{name}%")
+    .map(&:name)
   end
 
   def self.managers
-    joins(:role).merge(Role.managers)
+    joins(:role)
+    .merge(Role.managers)
   end
 
   def self.not_managed_by(name)
@@ -22,10 +27,14 @@ class Person < ApplicationRecord
       LEFT JOIN people managers
       ON managers.id = people.manager_id
     SQL
-    where.not(
+    where(
       "managers.id != ? OR managers.id IS NULL", 
      Person.find_by!(name: name) 
     )
+  end
+
+  def self.order_by_age 
+    order(age: :desc)
   end
 
 

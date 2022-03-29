@@ -24,3 +24,7 @@ if manager_1.save && manager_2.save
     end
   end
 end
+
+Person.all.each do |p|
+
+end
